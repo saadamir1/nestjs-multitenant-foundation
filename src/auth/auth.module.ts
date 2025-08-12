@@ -5,7 +5,8 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
-import { AuthController } from './auth.controller';
+
+import { AuthResolver } from './auth.resolver';
 import { EmailService } from '../common/services/email.service';
 import { AuditService } from '../common/services/audit.service';
 import { AuditLog } from '../common/entities/audit-log.entity';
@@ -20,8 +21,8 @@ import { AuditLog } from '../common/entities/audit-log.entity';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  controllers: [AuthController], 
-  providers: [AuthService, JwtStrategy, EmailService, AuditService],
+ 
+  providers: [AuthService, AuthResolver, JwtStrategy, EmailService, AuditService],
   exports: [AuthService],
 })
 export class AuthModule {}
