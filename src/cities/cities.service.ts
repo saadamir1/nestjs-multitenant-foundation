@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCityDto } from './dto/create-city.dto';
-import { UpdateCityDto } from './dto/update-city.dto';
+import { CreateCityInput, UpdateCityInput } from './dto/graphql-inputs';
 import { Repository } from 'typeorm';
 import { City } from './entities/city.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,9 +9,9 @@ export class CitiesService {
   constructor(
     @InjectRepository(City) private readonly citiesRepository: Repository<City>,
   ) {}
-  async create(createCityDto: CreateCityDto) {
+  async create(createCityInput: CreateCityInput) {
     try {
-      const city = this.citiesRepository.create(createCityDto);
+      const city = this.citiesRepository.create(createCityInput);
       return await this.citiesRepository.save(city);
     } catch (err) {
       throw err;
@@ -40,12 +39,12 @@ export class CitiesService {
     return city || null;
   }
 
-  async update(id: number, updateCityDto: UpdateCityDto) {
+  async update(id: number, updateCityInput: UpdateCityInput) {
     const city = await this.citiesRepository.findOne({ where: { id } });
     if (!city) {
       throw new NotFoundException(`City with id ${id} not found`);
     }
-    Object.assign(city, updateCityDto);
+    Object.assign(city, updateCityInput);
     return await this.citiesRepository.save(city);
   }
 

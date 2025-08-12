@@ -1,7 +1,5 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdateProfileDto, ChangePasswordDto } from './dto/update-profile.dto';
+import { CreateUserInput, UpdateProfileInput, ChangePasswordInput } from './dto/graphql-inputs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -36,10 +34,10 @@ export class UsersService {
     }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserInput: any) {
     const user = await this.userRepository.preload({
       id,
-      ...updateUserDto,
+      ...updateUserInput,
     });
     if (!user) {
       throw new UnauthorizedException(`User with id ${id} not found`);
@@ -63,40 +61,40 @@ export class UsersService {
     return this.userRepository.find({ where: { role } });
   }
 
-  async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+  async create(createUserInput: CreateUserInput) {
+    const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
     const user = this.userRepository.create({
-      ...createUserDto,
+      ...createUserInput,
       password: hashedPassword,
     });
     return this.userRepository.save(user);
   }
 
-  async updateProfile(userId: number, updateProfileDto: UpdateProfileDto): Promise<User> {
+  async updateProfile(userId: number, updateProfileInput: UpdateProfileInput): Promise<User> {
     const user = await this.findOne(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
 
     // Update only provided fields
-    Object.assign(user, updateProfileDto);
+    Object.assign(user, updateProfileInput);
     return this.userRepository.save(user);
   }
 
-  async changePassword(userId: number, changePasswordDto: ChangePasswordDto): Promise<{ message: string }> {
+  async changePassword(userId: number, changePasswordInput: ChangePasswordInput): Promise<{ message: string }> {
     const user = await this.findOne(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+    const isCurrentPasswordValid = await bcrypt.compare(changePasswordInput.currentPassword, user.password);
     if (!isCurrentPasswordValid) {
       throw new BadRequestException('Current password is incorrect');
     }
 
     // Hash new password
-    const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    const hashedNewPassword = await bcrypt.hash(changePasswordInput.newPassword, 10);
     
     // Update password
     user.password = hashedNewPassword;
