@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuditLog } from './common/entities/audit-log.entity';
+import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuditLog } from './common/entities/audit-log.entity';
       sortSchema: true,
       playground: true,
       introspection: true,
+      context: ({ req }) => ({ req }),
     }),
     ThrottlerModule.forRoot([
       {
@@ -100,11 +102,11 @@ import { AuditLog } from './common/entities/audit-log.entity';
   ],
   controllers: [],
   providers: [
-
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // Temporarily disabled for testing
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: GraphQLThrottlerGuard,
+    // },
   ],
 })
 export class AppModule implements NestModule {
