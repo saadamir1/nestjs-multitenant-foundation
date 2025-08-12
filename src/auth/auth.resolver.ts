@@ -1,5 +1,5 @@
 import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, ConflictException, NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
@@ -42,7 +42,7 @@ export class AuthResolver {
   async register(@Args('registerInput') registerInput: CreateUserInput): Promise<MessageResponse> {
     const userExists = await this.usersService.findByEmail(registerInput.email);
     if (userExists) {
-      throw new Error('Email already in use');
+      throw new ConflictException('Email already in use');
     }
     
     const user = await this.usersService.create(registerInput);
@@ -57,7 +57,7 @@ export class AuthResolver {
   async bootstrapAdmin(@Args('bootstrapInput') bootstrapInput: CreateUserInput): Promise<AuthResponse> {
     const existingAdmin = await this.usersService.findByRole('admin');
     if (existingAdmin && existingAdmin.length > 0) {
-      throw new Error('Admin user already exists');
+      throw new ConflictException('Admin user already exists');
     }
 
     const adminUser = await this.usersService.create({
@@ -97,7 +97,7 @@ export class AuthResolver {
   async me(@CurrentUser() user: any): Promise<User> {
     const fullUser = await this.usersService.findOne(user.userId);
     if (!fullUser) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     
     const { password, refreshToken, ...userProfile } = fullUser;
