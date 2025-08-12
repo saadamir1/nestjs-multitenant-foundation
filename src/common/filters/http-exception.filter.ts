@@ -21,6 +21,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp(); // Get HTTP context
     const response = ctx.getResponse<Response>(); // Express response object
     const request = ctx.getRequest<Request>(); // Express request object
+    
+    // Handle GraphQL context differently
+    if (!request || !response) {
+      // For GraphQL, just log and rethrow
+      console.error('GraphQL Error:', exception);
+      throw exception;
+    }
 
     // Determine HTTP status code
     const status =
@@ -46,7 +53,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ? exception.name
           : 'Internal Server Error',
       message,
-      path: request.url,
+      path: request?.url || '/graphql',
       timestamp: new Date().toISOString(),
     };
 
@@ -54,7 +61,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
   }
 
   private logException(exception: unknown, request: Request, status: number) {
-    const { method, url } = request;
+    const method = request?.method || 'GraphQL';
+    const url = request?.url || '/graphql';
     const timestamp = new Date().toISOString();
 
     // Create base log context
