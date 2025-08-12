@@ -1,0 +1,137 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  access_token: String!
+  refresh_token: String!
+}
+
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+input CitiesFilterInput {
+  limit: Float
+  page: Float
+  search: String
+}
+
+type City {
+  active: Boolean!
+  country: String
+  description: String
+  id: ID!
+  imageUrl: String
+  name: String!
+}
+
+input CreateCityInput {
+  active: Boolean
+  country: String
+  description: String
+  imageUrl: String
+  name: String!
+}
+
+input CreateUserInput {
+  email: String!
+  firstName: String!
+  isEmailVerified: Boolean
+  lastName: String!
+  password: String!
+  role: String
+}
+
+input EmailVerificationInput {
+  email: String!
+}
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type MessageResponse {
+  message: String!
+}
+
+type Mutation {
+  bootstrapAdmin(bootstrapInput: CreateUserInput!): AuthResponse!
+  changePassword(changePasswordInput: ChangePasswordInput!): String!
+  createCity(createCityInput: CreateCityInput!): City!
+  createUser(createUserInput: CreateUserInput!): User!
+  deleteCity(id: ID!): Boolean!
+  deleteUser(id: ID!): Boolean!
+  forgotPassword(forgotPasswordInput: ForgotPasswordInput!): MessageResponse!
+  login(loginInput: LoginInput!): AuthResponse!
+  refreshToken(refreshTokenInput: RefreshTokenInput!): AuthResponse!
+  register(registerInput: CreateUserInput!): MessageResponse!
+  resetPassword(resetPasswordInput: ResetPasswordInput!): MessageResponse!
+  sendEmailVerification(emailVerificationInput: EmailVerificationInput!): MessageResponse!
+  updateCity(id: ID!, updateCityInput: UpdateCityInput!): City!
+  updateProfile(updateProfileInput: UpdateProfileInput!): User!
+  verifyEmail(verifyEmailInput: VerifyEmailInput!): MessageResponse!
+}
+
+type PaginatedCities {
+  data: [City!]!
+  lastPage: Int!
+  page: Int!
+  total: Int!
+}
+
+type Query {
+  cities(filter: CitiesFilterInput): PaginatedCities!
+  city(id: ID!): City
+  me: User!
+  user(id: ID!): User
+  users: [User!]!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
+}
+
+input ResetPasswordInput {
+  newPassword: String!
+  token: String!
+}
+
+input UpdateCityInput {
+  active: Boolean
+  country: String
+  description: String
+  imageUrl: String
+  name: String
+}
+
+input UpdateProfileInput {
+  firstName: String
+  lastName: String
+  profilePicture: String
+}
+
+type User {
+  email: String!
+  firstName: String!
+  id: ID!
+  isEmailVerified: Boolean!
+  lastName: String!
+  profilePicture: String
+  role: UserRole!
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+input VerifyEmailInput {
+  token: String!
+}
