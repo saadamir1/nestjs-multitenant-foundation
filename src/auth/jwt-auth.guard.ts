@@ -16,9 +16,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 /**
  * Usage:
  *
- * @Get('me')
+ * @Query(() => User)
  * @UseGuards(JwtAuthGuard)
- * getProtectedRoute(@CurrentUser() user: any) {
+ * async me(@CurrentUser() user: any): Promise<User> {
  *   return user; // Returns the authenticated user object
  * }
  */
