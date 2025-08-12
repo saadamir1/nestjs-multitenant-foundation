@@ -1,10 +1,23 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 
+enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
+registerEnumType(UserRole, {
+  name: 'UserRole',
+});
+
+@ObjectType()
 @Entity({ name: 'users' })
 export class User {
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column({
     name: 'email',
     nullable: false,
@@ -18,24 +31,28 @@ export class User {
   })
   password: string;
 
+  @Field()
   @Column({
     nullable: false,
     default: '',
   })
   firstName: string;
 
+  @Field()
   @Column({
     nullable: false,
     default: '',
   })
   lastName: string;
 
+  @Field(() => UserRole)
   @Column({ default: 'user' })
   role: 'user' | 'admin';
 
   @Column({ type: 'text', nullable: true })
   refreshToken: string;
 
+  @Field({ nullable: true })
   @Column({ type: 'text', nullable: true })
   profilePicture: string;
 
@@ -45,6 +62,7 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpires: Date;
 
+  @Field()
   @Column({ type: 'boolean', default: false })
   isEmailVerified: boolean;
 
