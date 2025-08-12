@@ -1,10 +1,11 @@
-# NestJS Professional Foundation
+# NestJS GraphQL Foundation
 
-A comprehensive, production-ready NestJS foundation with advanced authentication, security, file handling, and enterprise-grade features. Built with PostgreSQL, TypeORM, JWT authentication, refresh tokens, role-based access control, audit logging, and comprehensive testing.
+A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, file handling, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, and comprehensive testing.
 
 ## 🛠️ Tech Stack
 
 - **NestJS** - Progressive Node.js framework
+- **GraphQL** - Query language with Apollo Server
 - **TypeORM** - ORM for TypeScript with migration support
 - **PostgreSQL** - Relational database
 - **JWT** - Access and refresh token authentication
@@ -23,19 +24,19 @@ A comprehensive, production-ready NestJS foundation with advanced authentication
 - 🔒 **Hashed Passwords with bcrypt**
 - 📧 **Password Reset via Email** (Secure token-based reset)
 - ✉️ **Email Service Integration** (Nodemailer with Gmail)
-- 📋 **Pagination Support** (e.g., `/cities?page=2`)
+- 📋 **Pagination Support** (GraphQL queries with pagination)
 - 🧹 **Soft Delete Support** (e.g., cities)
 - 📁 **File Upload** - Image upload with Cloudinary integration
 - 🖼️ **Image Processing** - Automatic optimization and transformation
 - 🧾 **Request Logging** - Winston logger with file output
 - 📊 **Audit Logging** - User activity tracking for security and compliance
-- 🚀 **RESTful API Structure**
+- 🚀 **GraphQL API** - Type-safe queries and mutations with Apollo Server
 - 📊 **Database Integration** - PostgreSQL with TypeORM
 - 🔄 **Database Migrations** - Version control for database schema
 - 🎯 **Type Safety** - Full TypeScript support
 - 🧪 **Comprehensive Testing** - Unit tests, E2E tests, and test coverage
-- 📚 **API Documentation** - Interactive Swagger/OpenAPI documentation
-- 🔢 **API Versioning** - URI-based versioning (e.g., `/api/v1/users`)
+- 📚 **GraphQL Playground** - Interactive GraphQL query interface
+- 🔢 **API Versioning** - URI-based versioning (e.g., `/api/v1/users`) + GraphQL
 - 🛡️ **Rate Limiting** - Prevents API abuse with configurable limits
 - 🚀 **Live Deployment** - Production-ready app deployed on Render.com
 - 🖥️ **Frontend Test Page** - Basic HTML interface for API testing
@@ -114,64 +115,89 @@ npm run start:dev
 
 **Local Development:**
 
-- API v1: `http://localhost:3000/api/v1`
-- Health Check: `http://localhost:3000`
-- Swagger: `http://localhost:3000/api/docs`
+- GraphQL Playground: `http://localhost:3000/graphql`
+- GraphQL API: `http://localhost:3000/graphql`
 
 **🚀 Live Production:**
 
-- API v1: `https://nestjs-pg-crud.onrender.com/api/v1`
-- Health Check: `https://nestjs-pg-crud.onrender.com`
-- Swagger: `https://nestjs-pg-crud.onrender.com/api/docs`
+- GraphQL API: `https://nestjs-graphql-foundation.onrender.com/graphql`
+- GraphQL Playground: `https://nestjs-graphql-foundation.onrender.com/graphql`
 
-## 🧪 API Endpoints
+## 🧪 GraphQL API
 
-### 🔐 Auth
+### GraphQL Playground
 
-| Method | Endpoint                | Description                |
-| ------ | ----------------------- | -------------------------- |
-| `POST` | `/api/v1/auth/register`        | Register user (admin only) |
-| `POST` | `/api/v1/auth/login`           | Login and get tokens       |
-| `POST` | `/api/v1/auth/refresh`         | Refresh access token       |
-| `POST` | `/api/v1/auth/forgot-password` | Request password reset     |
-| `POST` | `/api/v1/auth/reset-password`  | Reset password with token  |
-| `POST` | `/api/v1/auth/send-verification` | Send email verification  |
-| `POST` | `/api/v1/auth/verify-email`    | Verify email with token    |
-| `POST` | `/api/v1/auth/bootstrap-admin` | Create first admin user    |
-| `GET`  | `/api/v1/auth/me`              | Get current user           |
+Access the interactive GraphQL playground at `http://localhost:3000/graphql` to:
 
-### 👤 Users (Protected)
+- Explore the schema
+- Write and test queries/mutations
+- View documentation
+- Test authentication
 
-| Method   | Endpoint              | Description                |
-| -------- | --------------------- | -------------------------- |
-| `GET`    | `/api/v1/users`              | Get all users (admin only) |
-| `GET`    | `/api/v1/users/profile`      | Get user profile           |
-| `GET`    | `/api/v1/users/:id`          | Get user by ID             |
-| `PATCH`  | `/api/v1/users/profile`      | Update user profile        |
-| `PATCH`  | `/api/v1/users/change-password` | Change user password    |
-| `PATCH`  | `/api/v1/users/:id`          | Update user (admin only)   |
-| `DELETE` | `/api/v1/users/:id`          | Delete user (admin only)   |
+### Sample GraphQL Queries
 
-### 🌍 Cities (Example Module)
+```graphql
+# Login
+mutation {
+  login(loginInput: { email: "admin@example.com", password: "admin123" }) {
+    access_token
+    refresh_token
+  }
+}
 
-> **Note**: Cities module is included as a complete CRUD example - replace with your business logic.
+# Get current user
+query {
+  me {
+    id
+    email
+    firstName
+    lastName
+    role
+  }
+}
 
-| Method   | Endpoint                  | Description          |
-| -------- | ------------------------- | -------------------- |
-| `POST`   | `/api/v1/cities`                 | Create city          |
-| `GET`    | `/api/v1/cities?page=1&limit=10` | Get paginated cities |
-| `GET`    | `/api/v1/cities/:id`             | Get city by ID       |
-| `PATCH`  | `/api/v1/cities/:id`             | Update city          |
-| `DELETE` | `/api/v1/cities/:id`             | Soft delete city     |
+# Get all cities with pagination
+query {
+  cities(filter: { page: 1, limit: 10 }) {
+    data {
+      id
+      name
+      description
+      country
+    }
+    total
+    page
+    lastPage
+  }
+}
 
-### 📁 File Upload (Protected)
+# Create a city
+mutation {
+  createCity(createCityInput: {
+    name: "New York"
+    description: "The Big Apple"
+    country: "USA"
+  }) {
+    id
+    name
+    description
+  }
+}
 
-| Method | Endpoint                          | Description                            |
-| ------ | --------------------------------- | -------------------------------------- |
-| `POST` | `/api/v1/upload/image`                   | Upload general image file              |
-| `POST` | `/api/v1/upload/avatar`                  | Upload user avatar image               |
-| `POST` | `/api/v1/upload/profile-picture/:userId` | Upload and update user profile picture |
-| `POST` | `/api/v1/upload/city-image/:cityId`      | Upload and update city image           |
+# Update user profile
+mutation {
+  updateProfile(updateProfileInput: {
+    firstName: "Updated"
+    lastName: "Name"
+  }) {
+    id
+    firstName
+    lastName
+  }
+}
+```
+
+
 
 ## 🔁 Token Flow
 
@@ -311,16 +337,17 @@ curl -X PATCH http://localhost:3000/users/change-password \
 
 ### API Documentation
 
-**🚀 Live Production API:**
-Interactive Swagger documentation is available at `https://nestjs-pg-crud.onrender.com/api` where you can:
+**GraphQL Playground:**
+- Local: `http://localhost:3000/graphql`
+- Interactive schema exploration
+- Built-in query testing
+- Real-time documentation
 
-- View all available endpoints
-- Test API calls directly from the browser
-- See request/response schemas
-- Authenticate with JWT tokens
-
-**Local Development:**
-Swagger documentation available at `http://localhost:3000/api`
+**REST API Documentation:**
+- Local: `http://localhost:3000/api/docs`
+- Swagger/OpenAPI interface
+- Test REST endpoints
+- JWT authentication support
 
 ### Frontend Test Interface
 
