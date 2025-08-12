@@ -98,15 +98,13 @@ import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
     CitiesModule,
     UsersModule,
     AuthModule,
-
   ],
   controllers: [],
   providers: [
-    // Temporarily disabled for testing
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: GraphQLThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: GraphQLThrottlerGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {
