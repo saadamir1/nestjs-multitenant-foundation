@@ -1,21 +1,29 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { CitiesModule } from './cities/cities.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { UploadModule } from './upload/upload.module';
+
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuditLog } from './common/entities/audit-log.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: true,
+      introspection: true,
+    }),
     ThrottlerModule.forRoot([
       {
         name: 'short',
@@ -88,11 +96,11 @@ import { AuditLog } from './common/entities/audit-log.entity';
     CitiesModule,
     UsersModule,
     AuthModule,
-    UploadModule,
+
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
+
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
@@ -101,6 +109,6 @@ import { AuditLog } from './common/entities/audit-log.entity';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    // Logger middleware disabled for GraphQL to avoid introspection spam
   }
 }
