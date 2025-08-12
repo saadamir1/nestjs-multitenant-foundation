@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,52 +37,10 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter()); // handles unhandled exceptions globally
 
-  // Enable API versioning
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-    prefix: 'api/v',
-  });
-
-  // Swagger configuration
-  const config = new DocumentBuilder()
-    .setTitle('NestJS Professional Foundation API')
-    .setDescription(
-      'Production-ready REST API with JWT authentication, RBAC, audit logging, and comprehensive features',
-    )
-    .setVersion('1.0')
-    .addServer('http://localhost:3000', 'Development')
-    .addServer('https://nestjs-pg-crud.onrender.com', 'Production')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'JWT-auth',
-    )
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management endpoints')
-    .addTag('cities', 'Cities CRUD endpoints (Example)')
-    .addTag('upload', 'File upload endpoints')
-    .addTag('health', 'Health check endpoints')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-      tryItOutEnabled: true,
-    },
-  });
+  // GraphQL will be available at /graphql
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log('API running on http://localhost:3000');
-  console.log('API v1 available at http://localhost:3000/api/v1');
-  console.log('Swagger documentation available at http://localhost:3000/api/docs');
+  console.log('GraphQL API running on http://localhost:3000');
+  console.log('GraphQL Playground available at http://localhost:3000/graphql');
 }
 bootstrap();
