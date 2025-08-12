@@ -1,13 +1,22 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 /**
  * Custom decorator that extracts the authenticated user from the request.
- * Use inside controllers to access `req.user` set by the JWT strategy.
+ * Works with both REST and GraphQL contexts.
  */
 export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    // Switch to HTTP context and extract request object
-    const request = ctx.switchToHttp().getRequest();
+  (data: unknown, context: ExecutionContext) => {
+    // Check if it's a GraphQL context
+    const gqlContext = GqlExecutionContext.create(context);
+    const ctx = gqlContext.getContext();
+    
+    if (ctx && ctx.req) {
+      return ctx.req.user;
+    }
+    
+    // Fallback to HTTP context for REST endpoints
+    const request = context.switchToHttp().getRequest();
     return request.user;
   },
 );
