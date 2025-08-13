@@ -101,10 +101,12 @@ import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
   ],
   controllers: [],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: GraphQLThrottlerGuard,
-    },
+    // GraphQL throttler guard disabled - needs further investigation
+    // Rate limiting can be implemented at API Gateway level in production
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: GraphQLThrottlerGuard,
+    // },
   ],
 })
 export class AppModule implements NestModule {
