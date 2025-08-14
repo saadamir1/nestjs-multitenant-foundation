@@ -1,6 +1,6 @@
 # NestJS GraphQL Foundation
 
-A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, file handling, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, and comprehensive testing.
+A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, and audit logging.
 
 ## 🛠️ Tech Stack
 
@@ -10,10 +10,8 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - **PostgreSQL** - Relational database
 - **JWT** - Access and refresh token authentication
 - **bcrypt** - Password hashing
-- **Cloudinary** - Cloud-based image storage and optimization
 - **Winston** - Logging library
 - **Nodemailer** - Email service for password reset and verification
-- **Multer** - File upload handling
 - **TypeScript** - Type safety
 
 ## ✨ Features
@@ -26,8 +24,6 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - ✉️ **Email Service Integration** (Nodemailer with Gmail)
 - 📋 **Pagination Support** (GraphQL queries with pagination)
 - 🧹 **Soft Delete Support** (e.g., cities)
-- 📁 **File Upload** - Image upload with Cloudinary integration
-- 🖼️ **Image Processing** - Automatic optimization and transformation
 - 🧾 **Request Logging** - Winston logger with file output
 - 📊 **Audit Logging** - User activity tracking for security and compliance
 - 🚀 **GraphQL API** - Type-safe queries and mutations with Apollo Server
@@ -36,10 +32,6 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - 🎯 **Type Safety** - Full TypeScript support
 - 🧪 **Comprehensive Testing** - Unit tests, E2E tests, and test coverage
 - 📚 **GraphQL Playground** - Interactive GraphQL query interface
-- 🔢 **API Versioning** - URI-based versioning (e.g., `/api/v1/users`) + GraphQL
-- 🛡️ **Rate Limiting** - Prevents API abuse with configurable limits
-- 🚀 **Live Deployment** - Production-ready app deployed on Render.com
-- 🖥️ **Frontend Test Page** - Basic HTML interface for API testing
 - ⚡ **Production Ready** - Error handling, validation, and security best practices
 
 ## 🚀 Quick Start
@@ -47,8 +39,8 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/saadamir1/nestjs-pg-crud.git
-cd nestjs-pg-crud
+git clone https://github.com/saadamir1/nestjs-graphql-foundation.git
+cd nestjs-graphql-foundation
 npm install
 ```
 
@@ -82,11 +74,6 @@ JWT_EXPIRES_IN=900s
 JWT_REFRESH_SECRET=jwt-refresh-secret
 JWT_REFRESH_EXPIRES_IN=7d
 NODE_ENV=development
-
-# Cloudinary Configuration (for file uploads)
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
 
 # Email Configuration (for password reset)
 EMAIL_USER=your-gmail@gmail.com
@@ -136,15 +123,53 @@ Access the interactive GraphQL playground at `http://localhost:3000/graphql` to:
 
 ### Sample GraphQL Queries
 
+#### Authentication
+
 ```graphql
-# Login
+# Bootstrap Admin (First time setup)
 mutation {
-  login(loginInput: { email: "admin@example.com", password: "admin123" }) {
+  bootstrapAdmin(bootstrapInput: {
+    email: "admin@example.com"
+    password: "admin123"
+    firstName: "Admin"
+    lastName: "User"
+  }) {
     access_token
     refresh_token
   }
 }
 
+# Login
+mutation {
+  login(loginInput: { 
+    email: "admin@example.com" 
+    password: "admin123" 
+  }) {
+    access_token
+    refresh_token
+  }
+}
+
+# Refresh Token
+mutation {
+  refreshToken(refreshTokenInput: {
+    refreshToken: "YOUR_REFRESH_TOKEN"
+  }) {
+    access_token
+    refresh_token
+  }
+}
+```
+
+#### Protected Queries (Add Authorization Header)
+
+```json
+{
+  "Authorization": "Bearer YOUR_ACCESS_TOKEN"
+}
+```
+
+```graphql
 # Get current user
 query {
   me {
@@ -156,6 +181,22 @@ query {
   }
 }
 
+# Get all users (Admin only)
+query {
+  users {
+    id
+    email
+    firstName
+    lastName
+    role
+    isEmailVerified
+  }
+}
+```
+
+#### Cities CRUD
+
+```graphql
 # Get all cities with pagination
 query {
   cities(filter: { page: 1, limit: 10 }) {
@@ -164,10 +205,22 @@ query {
       name
       description
       country
+      active
     }
     total
     page
     lastPage
+  }
+}
+
+# Get single city
+query {
+  city(id: 1) {
+    id
+    name
+    description
+    country
+    active
   }
 }
 
@@ -181,9 +234,31 @@ mutation {
     id
     name
     description
+    country
   }
 }
 
+# Update city
+mutation {
+  updateCity(id: 1, updateCityInput: {
+    description: "Updated description"
+  }) {
+    id
+    name
+    description
+    country
+  }
+}
+
+# Delete city
+mutation {
+  deleteCity(id: 1)
+}
+```
+
+#### User Management
+
+```graphql
 # Update user profile
 mutation {
   updateProfile(updateProfileInput: {
@@ -195,15 +270,74 @@ mutation {
     lastName
   }
 }
+
+# Change password
+mutation {
+  changePassword(changePasswordInput: {
+    currentPassword: "oldPassword"
+    newPassword: "newPassword123"
+  })
+}
+
+# Register new user (Admin only)
+mutation {
+  register(registerInput: {
+    email: "user@example.com"
+    password: "securePassword123"
+    firstName: "John"
+    lastName: "Doe"
+  }) {
+    message
+  }
+}
 ```
 
+#### Email Services
 
+```graphql
+# Send password reset email
+mutation {
+  forgotPassword(forgotPasswordInput: {
+    email: "user@example.com"
+  }) {
+    message
+  }
+}
+
+# Reset password with token
+mutation {
+  resetPassword(resetPasswordInput: {
+    token: "reset-token-from-email"
+    newPassword: "newSecurePassword123"
+  }) {
+    message
+  }
+}
+
+# Send email verification
+mutation {
+  sendEmailVerification(emailVerificationInput: {
+    email: "user@example.com"
+  }) {
+    message
+  }
+}
+
+# Verify email with token
+mutation {
+  verifyEmail(verifyEmailInput: {
+    token: "verification-token-from-email"
+  }) {
+    message
+  }
+}
+```
 
 ## 🔁 Token Flow
 
 - **Access Token** expires in 15 mins
 - **Refresh Token** stored securely in DB (7 days)
-- Use `/auth/refresh` to get new tokens without re-login
+- Use `refreshToken` mutation to get new tokens without re-login
 
 ## 🗃️ Database Migrations
 
@@ -247,112 +381,6 @@ npm run migration:run
 npm run start:prod
 ```
 
-## 🧪 Testing Examples
-
-### Register & Login
-
-```bash
-# Register (admin only - requires JWT token)
-curl -X POST http://localhost:3000/api/v1/auth/register \
-  -H "Authorization: Bearer ADMIN_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "securePassword123", "firstName": "John", "lastName": "Doe"}'
-
-# Login
-curl -X POST http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "securePassword123"}'
-
-# Forgot Password
-curl -X POST http://localhost:3000/auth/forgot-password \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com"}'
-
-# Reset Password
-curl -X POST http://localhost:3000/auth/reset-password \
-  -H "Content-Type: application/json" \
-  -d '{"token": "reset-token-from-email", "newPassword": "newSecurePassword123"}'
-
-# Send Email Verification
-curl -X POST http://localhost:3000/auth/send-verification \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com"}'
-
-# Verify Email
-curl -X POST http://localhost:3000/auth/verify-email \
-  -H "Content-Type: application/json" \
-  -d '{"token": "verification-token-from-email"}'
-
-# Bootstrap Admin (First time setup)
-curl -X POST http://localhost:3000/auth/bootstrap-admin \
-  -H "Content-Type: application/json" \
-  -d '{"email": "admin@example.com", "password": "admin123", "firstName": "Admin", "lastName": "User"}'
-```
-
-### Protected Routes
-
-```bash
-# Get cities with pagination (default: page=1, limit=10)
-curl -X GET "http://localhost:3000/cities?page=1&limit=10" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-
-# Create city
-curl -X POST http://localhost:3000/cities \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "New York", "description": "The Big Apple"}'
-
-# Upload image file
-curl -X POST http://localhost:3000/upload/image \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F "file=@/path/to/your/image.jpg"
-
-# Upload avatar
-curl -X POST http://localhost:3000/upload/avatar \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F "file=@/path/to/avatar.png"
-
-# Upload user profile picture
-curl -X POST http://localhost:3000/upload/profile-picture/2 \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F "file=@/path/to/profile.jpg"
-
-# Upload city image
-curl -X POST http://localhost:3000/upload/city-image/1 \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F "file=@/path/to/city.jpg"
-
-# Update user profile
-curl -X PATCH http://localhost:3000/users/profile \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"firstName": "Updated", "lastName": "Name"}'
-
-# Change password
-curl -X PATCH http://localhost:3000/users/change-password \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"currentPassword": "oldPassword", "newPassword": "newPassword123"}'
-```
-
-### API Documentation
-
-**GraphQL Playground:**
-- Local: `http://localhost:3000/graphql`
-- Interactive schema exploration
-- Built-in query testing
-- Real-time documentation
-
-**REST API Documentation:**
-- Local: `http://localhost:3000/api/docs`
-- Swagger/OpenAPI interface
-- Test REST endpoints
-- JWT authentication support
-
-### Frontend Test Interface
-
-Open `frontend-test.html` in your browser for a basic HTML interface to test the API endpoints.
-
 ## 📄 Database Schema
 
 ### User
@@ -365,7 +393,9 @@ Open `frontend-test.html` in your browser for a basic HTML interface to test the
   "firstName": "string",
   "lastName": "string",
   "role": "admin | user",
-  "refreshToken": "string (hashed)"
+  "refreshToken": "string (hashed)",
+  "isEmailVerified": "boolean",
+  "profilePicture": "string (optional)"
 }
 ```
 
@@ -378,7 +408,9 @@ Open `frontend-test.html` in your browser for a basic HTML interface to test the
       "id": "number",
       "name": "string (unique)",
       "description": "string",
+      "country": "string",
       "active": "boolean",
+      "imageUrl": "string (optional)",
       "deletedAt": "Date | null"
     }
   ],
@@ -394,60 +426,33 @@ Open `frontend-test.html` in your browser for a basic HTML interface to test the
 - Role-based access control with custom guards
 - Passwords hashed with bcrypt
 - Refresh tokens securely stored in database
-
-## 🛡️ Rate Limiting
-
-**Global Rate Limits:**
-
-- **Short**: 3 requests per second
-- **Medium**: 20 requests per 10 seconds
-- **Long**: 100 requests per minute
-
-**Endpoint-Specific Limits:**
-
-- **Login**: 5 attempts per minute (prevents brute force)
-- **Refresh Token**: 10 attempts per minute
-
-**Headers Returned:**
-
-- `X-RateLimit-Limit`: Request limit
-- `X-RateLimit-Remaining`: Remaining requests
-- `X-RateLimit-Reset`: Reset time
+- Email verification system
+- Password reset via email
 
 ## 🗂️ Project Structure
 
-````
+```
 src/
-├── auth/              # Authentication logic
-├── users/             # User management
-├── cities/            # Cities CRUD
-├── upload/            # File upload functionality
+├── auth/              # Authentication logic (GraphQL resolvers)
+├── users/             # User management (GraphQL resolvers)
+├── cities/            # Cities CRUD (GraphQL resolvers)
 ├── common/            # Guards, decorators, middleware, services
-│   ├── services/      # Cloudinary, Email, Audit services
+│   ├── services/      # Email, Audit services
 │   ├── entities/      # Audit log entity
+│   ├── guards/        # JWT, Roles, GraphQL guards
 │   └── middleware/    # Logger middleware
 ├── migrations/        # Database migrations
 ├── data-source.ts     # TypeORM CLI configuration
 ├── migration.config.ts # Migration configuration
+├── schema.gql         # Auto-generated GraphQL schema
 ├── app.module.ts
 └── main.ts
 logs/                  # Application logs
-frontend-test.html     # Basic API testing interface
-```e, services
-│   ├── services/      # Cloudinary service
-│   └── middleware/    # Logger middleware
-├── migrations/        # Database migrations
-├── data-source.ts     # TypeORM CLI configuration
-├── migration.config.ts # Migration configuration
-├── app.module.ts
-└── main.ts
-logs/                  # Application logs
-frontend-test.html     # Basic API testing interface
-````
+```
 
 ## 🧪 Testing
 
-This project includes comprehensive testing with **60 unit tests** and **6 E2E tests** (2 test suites) covering critical functionality.
+This project includes comprehensive testing with **60 unit tests** and **6 E2E tests** covering critical functionality.
 
 ### Unit Tests
 
@@ -465,7 +470,7 @@ npm run test:cov
 **Test Coverage:**
 
 - ✅ **Services**: All CRUD operations, authentication, email verification, profile management
-- ✅ **Controllers**: HTTP endpoints, request/response handling
+- ✅ **Resolvers**: GraphQL endpoints, request/response handling
 - ✅ **Auth**: Login, refresh tokens, JWT validation, email verification
 - ✅ **Users**: Profile updates, password changes, user management
 - ✅ **Audit**: Activity logging and tracking
@@ -484,22 +489,6 @@ npm run test:e2e
 - ✅ **Email Verification**: Send verification, verify email, login blocking
 - ✅ **Authentication Flow**: Complete email verification workflow
 - ✅ **Database**: Proper cleanup and isolation
-
-### Test Structure
-
-```
-src/
-├── **/*.spec.ts           # Unit tests (Jest)
-└── **/*.service.spec.ts    # Service layer tests
-test/
-├── email-verification.e2e-spec.ts  # Email verification E2E tests
-├── app.e2e-spec.ts                 # Health check E2E test
-└── jest-e2e.config.json            # E2E Jest configuration
-```
-
-### Test Management
-
-**Note**: Some E2E tests were removed due to rate limiting conflicts. The comprehensive unit test suite (60 tests) provides complete coverage of all business logic.
 
 ## 📜 Available Scripts
 
@@ -541,8 +530,8 @@ npm run migration:show         # Show migration status
 **Token Issues:**
 
 - Verify JWT secrets in `.env`
-- Use refresh endpoint when access token expires
-- Check `Authorization: Bearer <token>` format
+- Use refresh mutation when access token expires
+- Check `Authorization: Bearer <token>` format in GraphQL headers
 
 **Email Issues:**
 
@@ -556,27 +545,14 @@ npm run migration:show         # Show migration status
 
 - Verify user role in database
 - Check endpoint permissions (admin vs user)
+- Ensure proper Authorization header in GraphQL requests
 
-**File Upload Issues:**
+**GraphQL Issues:**
 
-- Check Cloudinary credentials in `.env`
-- Verify file size (max 5MB) and type (JPEG, PNG, GIF, WebP)
-- Ensure proper `multipart/form-data` content type
-- Check network connectivity to Cloudinary
-
-**Rate Limiting Issues:**
-
-- Check `X-RateLimit-*` headers in response
-- Wait for rate limit reset time
-- Consider implementing exponential backoff
-- Contact admin if limits seem too restrictive
-
-**Test Issues:**
-
-- Run `npm run test:cov` to check test coverage
-- Use `npm run test:e2e` for integration testing
-- Check database connection for E2E tests
-- Ensure test database is separate from development
+- Use GraphQL Playground for testing queries
+- Check schema documentation in playground
+- Verify query syntax and field names
+- Ensure proper authentication headers for protected queries
 
 ## 🐳 Docker Support
 
@@ -597,10 +573,10 @@ docker-compose down
 
 ```bash
 # Build image
-docker build -t nestjs-enterprise .
+docker build -t nestjs-graphql-foundation .
 
 # Run container
-docker run -p 3000:3000 --env-file .env nestjs-enterprise
+docker run -p 3000:3000 --env-file .env nestjs-graphql-foundation
 ```
 
 ## 🤝 Contributing
@@ -639,7 +615,7 @@ npm run test:e2e
 
 ## 📈 Project Stats
 
-- **60 Unit Tests** - Comprehensive service and controller testing
+- **60 Unit Tests** - Comprehensive service and resolver testing
 - **6 E2E Tests** - Health check and email verification workflows
 - **100% TypeScript** - Full type safety
 - **JWT Security** - Access + refresh token implementation
@@ -647,9 +623,13 @@ npm run test:e2e
 - **Audit Logging** - User activity tracking for security
 - **Profile Management** - User profile updates and password changes
 - **Database Migrations** - Version-controlled schema changes
-- **Live Deployment** - Successfully deployed on Render.com
+- **GraphQL Schema** - Auto-generated, type-safe API schema
 - **Production Ready** - Error handling, validation, logging, comprehensive testing
 
 ### Tags
 
-`nestjs` `typeorm` `postgresql` `jwt-auth` `refresh-tokens` `rbac` `crud-api` `typescript` `migrations` `database-versioning` `jest-testing` `e2e-testing` `file-upload` `cloudinary` `winston-logging` `production-ready`
+`nestjs` `graphql` `apollo-server` `typeorm` `postgresql` `jwt-auth` `refresh-tokens` `rbac` `typescript` `migrations` `database-versioning` `jest-testing` `e2e-testing` `winston-logging` `production-ready`
+
+## 🔗 Related Projects
+
+- **REST Version**: [nestjs-pg-crud](https://github.com/saadamir1/nestjs-pg-crud) - The original REST API foundation this project was transformed from
