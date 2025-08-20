@@ -29,6 +29,9 @@ import { WebSocketsModule } from './websockets/websockets.module';
       playground: true,
       introspection: true,
       context: ({ req }) => ({ req }),
+      subscriptions: {
+        'subscriptions-transport-ws': true,
+      },
     }),
     ThrottlerModule.forRoot([
       {
