@@ -1,6 +1,8 @@
-# NestJS GraphQL Foundation
+# NestJS GraphQL Realtime Foundation
 
-A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, and audit logging.
+**This repository is an advanced version of the original NestJS GraphQL Foundation, extended with real-time WebSocket features (chat, notifications, subscriptions) on top of the core GraphQL foundation.**
+
+A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, **real-time chat**, and **notifications** via WebSockets and GraphQL subscriptions.
 
 ## 🛠️ Tech Stack
 
@@ -12,6 +14,7 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - **bcrypt** - Password hashing
 - **Winston** - Logging library
 - **Nodemailer** - Email service for password reset and verification
+- **Socket.IO** - Real-time chat and notifications
 - **TypeScript** - Type safety
 
 ## ✨ Features
@@ -31,7 +34,9 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - 🔄 **Database Migrations** - Version control for database schema
 - 🎯 **Type Safety** - Full TypeScript support
 - 🧪 **Comprehensive Testing** - Unit tests, E2E tests, and test coverage
-- 📚 **GraphQL Playground** - Interactive GraphQL query interface
+- � **Real-Time Chat** - Chat rooms, messaging, and subscriptions
+- 🔔 **Notifications** - User notifications, unread count, mark as read, and real-time updates
+- �📚 **GraphQL Playground** - Interactive GraphQL query interface
 - ⚡ **Production Ready** - Error handling, validation, and security best practices
 
 ## 🚀 Quick Start
@@ -46,11 +51,117 @@ npm install
 
 ### 2. Database Setup
 
+## 🧪 GraphQL API
+
+### Sample GraphQL Queries
+
+#### Chat (Real-Time Messaging)
+
+```graphql
+# Create a chat room
+mutation {
+  createRoom(createRoomInput: { name: "General", participantIds: [1, 2] }) {
+    id
+    name
+    participantIds
+    createdAt
+  }
+}
+
+# Send a message
+mutation {
+  sendMessage(sendMessageInput: { content: "Hello, world!", roomId: 1 }) {
+    id
+    content
+    senderId
+    roomId
+    createdAt
+  }
+}
+
+# Get my chat rooms
+query {
+  myRooms {
+    id
+    name
+    participantIds
+    createdAt
+  }
+}
+
+# Get messages in a room
+query {
+  roomMessages(roomId: 1) {
+    id
+    content
+    senderId
+    createdAt
+  }
+}
+
+# Subscribe to new messages (GraphQL subscription)
+subscription {
+  messageAdded {
+    id
+    content
+    senderId
+    roomId
+    createdAt
+  }
+}
+```
+
+#### Notifications
+
+```graphql
+# Get my notifications
+query {
+  myNotifications {
+    id
+    type
+    title
+    message
+    read
+    createdAt
+  }
+}
+
+# Get unread notification count
+query {
+  unreadCount
+}
+
+# Mark notification as read
+mutation {
+  markNotificationRead(id: 1) {
+    id
+    read
+  }
+}
+
+# Subscribe to new notifications (GraphQL subscription)
+subscription {
+  notificationAdded {
+    id
+    type
+    title
+    message
+    read
+    createdAt
+  }
+}
+```
+
+---
+
+## 🗂️ Project Structure
+
+````
 ```sql
 CREATE USER dev WITH PASSWORD 'secret';
 CREATE DATABASE demo OWNER dev;
 GRANT ALL PRIVILEGES ON DATABASE demo TO dev;
-```
+````
 
 ### 3. Environment Variables
 
@@ -66,6 +177,14 @@ Or create `.env` manually:
 ```env
 DB_HOST=127.0.0.1
 DB_PORT=5432
+```
+
+---
+
+## 🧑‍💻 Frontend Integration
+
+## This backend is designed to be used with a separate React frontend (see the `nestjs-graphql-realtime-frontend` repo or your own custom frontend). The previous `frontend-test.html` file has been removed in favor of a dedicated frontend application.
+
 DB_USERNAME=dev
 DB_PASSWORD=secret
 DB_NAME=demo
@@ -76,13 +195,16 @@ JWT_REFRESH_EXPIRES_IN=7d
 NODE_ENV=development
 
 # Email Configuration (for password reset)
+
 EMAIL_USER=your-gmail@gmail.com
 EMAIL_PASS=your-gmail-app-password
 FRONTEND_URL=http://localhost:3001
 
 # Production Database URL (optional)
+
 DATABASE_URL=postgresql://username:password@host:port/database
-```
+
+````
 
 ### 4. Run Database Migrations
 
@@ -92,7 +214,7 @@ npm run migration:run
 
 # Check migration status
 npm run migration:show
-```
+````
 
 ### 5. Run Application
 
@@ -128,12 +250,14 @@ Access the interactive GraphQL playground at `http://localhost:3000/graphql` to:
 ```graphql
 # Bootstrap Admin (First time setup)
 mutation {
-  bootstrapAdmin(bootstrapInput: {
-    email: "admin@example.com"
-    password: "admin123"
-    firstName: "Admin"
-    lastName: "User"
-  }) {
+  bootstrapAdmin(
+    bootstrapInput: {
+      email: "admin@example.com"
+      password: "admin123"
+      firstName: "Admin"
+      lastName: "User"
+    }
+  ) {
     access_token
     refresh_token
   }
@@ -141,10 +265,7 @@ mutation {
 
 # Login
 mutation {
-  login(loginInput: { 
-    email: "admin@example.com" 
-    password: "admin123" 
-  }) {
+  login(loginInput: { email: "admin@example.com", password: "admin123" }) {
     access_token
     refresh_token
   }
@@ -152,9 +273,7 @@ mutation {
 
 # Refresh Token
 mutation {
-  refreshToken(refreshTokenInput: {
-    refreshToken: "YOUR_REFRESH_TOKEN"
-  }) {
+  refreshToken(refreshTokenInput: { refreshToken: "YOUR_REFRESH_TOKEN" }) {
     access_token
     refresh_token
   }
@@ -226,11 +345,13 @@ query {
 
 # Create a city
 mutation {
-  createCity(createCityInput: {
-    name: "New York"
-    description: "The Big Apple"
-    country: "USA"
-  }) {
+  createCity(
+    createCityInput: {
+      name: "New York"
+      description: "The Big Apple"
+      country: "USA"
+    }
+  ) {
     id
     name
     description
@@ -240,9 +361,7 @@ mutation {
 
 # Update city
 mutation {
-  updateCity(id: 1, updateCityInput: {
-    description: "Updated description"
-  }) {
+  updateCity(id: 1, updateCityInput: { description: "Updated description" }) {
     id
     name
     description
@@ -261,10 +380,9 @@ mutation {
 ```graphql
 # Update user profile
 mutation {
-  updateProfile(updateProfileInput: {
-    firstName: "Updated"
-    lastName: "Name"
-  }) {
+  updateProfile(
+    updateProfileInput: { firstName: "Updated", lastName: "Name" }
+  ) {
     id
     firstName
     lastName
@@ -273,20 +391,24 @@ mutation {
 
 # Change password
 mutation {
-  changePassword(changePasswordInput: {
-    currentPassword: "oldPassword"
-    newPassword: "newPassword123"
-  })
+  changePassword(
+    changePasswordInput: {
+      currentPassword: "oldPassword"
+      newPassword: "newPassword123"
+    }
+  )
 }
 
 # Register new user (Admin only)
 mutation {
-  register(registerInput: {
-    email: "user@example.com"
-    password: "securePassword123"
-    firstName: "John"
-    lastName: "Doe"
-  }) {
+  register(
+    registerInput: {
+      email: "user@example.com"
+      password: "securePassword123"
+      firstName: "John"
+      lastName: "Doe"
+    }
+  ) {
     message
   }
 }
@@ -297,37 +419,33 @@ mutation {
 ```graphql
 # Send password reset email
 mutation {
-  forgotPassword(forgotPasswordInput: {
-    email: "user@example.com"
-  }) {
+  forgotPassword(forgotPasswordInput: { email: "user@example.com" }) {
     message
   }
 }
 
 # Reset password with token
 mutation {
-  resetPassword(resetPasswordInput: {
-    token: "reset-token-from-email"
-    newPassword: "newSecurePassword123"
-  }) {
+  resetPassword(
+    resetPasswordInput: {
+      token: "reset-token-from-email"
+      newPassword: "newSecurePassword123"
+    }
+  ) {
     message
   }
 }
 
 # Send email verification
 mutation {
-  sendEmailVerification(emailVerificationInput: {
-    email: "user@example.com"
-  }) {
+  sendEmailVerification(emailVerificationInput: { email: "user@example.com" }) {
     message
   }
 }
 
 # Verify email with token
 mutation {
-  verifyEmail(verifyEmailInput: {
-    token: "verification-token-from-email"
-  }) {
+  verifyEmail(verifyEmailInput: { token: "verification-token-from-email" }) {
     message
   }
 }
