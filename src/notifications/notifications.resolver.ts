@@ -39,6 +39,6 @@ export class NotificationsResolver {
 
   @Subscription(() => Notification)
   notificationAdded() {
-    return pubSub.asyncIterator('notificationAdded');
+    return pubSub.asyncIterableIterator('notificationAdded');
   }
 }

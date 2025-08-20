@@ -28,7 +28,9 @@ export class ChatResolver {
   }
 
   @Mutation(() => ChatRoom)
-  async createRoom(@Args('createRoomInput') createRoomDto: CreateRoomDto): Promise<ChatRoom> {
+  async createRoom(
+    @Args('createRoomInput') createRoomDto: CreateRoomDto,
+  ): Promise<ChatRoom> {
     return this.chatService.createRoom(createRoomDto);
   }
 
@@ -44,6 +46,6 @@ export class ChatResolver {
 
   @Subscription(() => ChatMessage)
   messageAdded() {
-    return pubSub.asyncIterator('messageAdded');
+    return pubSub.asyncIterableIterator('messageAdded');
   }
 }
