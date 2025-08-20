@@ -12,6 +12,22 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
+type ChatMessage {
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  roomId: Float!
+  senderId: Float!
+}
+
+type ChatRoom {
+  createdAt: DateTime!
+  id: ID!
+  messages: [ChatMessage!]!
+  name: String!
+  participantIds: [Float!]!
+}
+
 input CitiesFilterInput {
   limit: Float
   page: Float
@@ -35,6 +51,18 @@ input CreateCityInput {
   name: String!
 }
 
+input CreateNotificationDto {
+  message: String!
+  title: String!
+  type: String!
+  userId: Float!
+}
+
+input CreateRoomDto {
+  name: String!
+  participantIds: [Float!]!
+}
+
 input CreateUserInput {
   email: String!
   firstName: String!
@@ -43,6 +71,11 @@ input CreateUserInput {
   password: String!
   role: String
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input EmailVerificationInput {
   email: String!
@@ -65,18 +98,32 @@ type Mutation {
   bootstrapAdmin(bootstrapInput: CreateUserInput!): AuthResponse!
   changePassword(changePasswordInput: ChangePasswordInput!): String!
   createCity(createCityInput: CreateCityInput!): City!
+  createNotification(createNotificationInput: CreateNotificationDto!): Notification!
+  createRoom(createRoomInput: CreateRoomDto!): ChatRoom!
   createUser(createUserInput: CreateUserInput!): User!
   deleteCity(id: ID!): Boolean!
   deleteUser(id: ID!): Boolean!
   forgotPassword(forgotPasswordInput: ForgotPasswordInput!): MessageResponse!
   login(loginInput: LoginInput!): AuthResponse!
+  markNotificationRead(id: Float!): Notification!
   refreshToken(refreshTokenInput: RefreshTokenInput!): AuthResponse!
   register(registerInput: CreateUserInput!): MessageResponse!
   resetPassword(resetPasswordInput: ResetPasswordInput!): MessageResponse!
   sendEmailVerification(emailVerificationInput: EmailVerificationInput!): MessageResponse!
+  sendMessage(sendMessageInput: SendMessageDto!): ChatMessage!
   updateCity(id: ID!, updateCityInput: UpdateCityInput!): City!
   updateProfile(updateProfileInput: UpdateProfileInput!): User!
   verifyEmail(verifyEmailInput: VerifyEmailInput!): MessageResponse!
+}
+
+type Notification {
+  createdAt: DateTime!
+  id: ID!
+  message: String!
+  read: Boolean!
+  title: String!
+  type: String!
+  userId: Float!
 }
 
 type PaginatedCities {
@@ -90,6 +137,10 @@ type Query {
   cities(filter: CitiesFilterInput): PaginatedCities!
   city(id: ID!): City
   me: User!
+  myNotifications: [Notification!]!
+  myRooms: [ChatRoom!]!
+  roomMessages(roomId: Float!): [ChatMessage!]!
+  unreadCount: Float!
   user(id: ID!): User
   users: [User!]!
 }
@@ -101,6 +152,16 @@ input RefreshTokenInput {
 input ResetPasswordInput {
   newPassword: String!
   token: String!
+}
+
+input SendMessageDto {
+  content: String!
+  roomId: Float!
+}
+
+type Subscription {
+  messageAdded: ChatMessage!
+  notificationAdded: Notification!
 }
 
 input UpdateCityInput {
