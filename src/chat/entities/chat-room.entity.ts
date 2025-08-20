@@ -19,7 +19,7 @@ export class ChatRoom {
   @Field()
   name: string;
 
-  @Column('simple-array')
+  @Column('int', { array: true })
   @Field(() => [Number])
   participantIds: number[];
 
