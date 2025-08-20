@@ -10,10 +10,13 @@ import { join } from 'path';
 import { CitiesModule } from './cities/cities.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuditLog } from './common/entities/audit-log.entity';
 import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
+import { WebSocketsModule } from './websockets/websockets.module';
 
 @Module({
   imports: [
@@ -98,6 +101,9 @@ import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
     CitiesModule,
     UsersModule,
     AuthModule,
+    ChatModule,
+    NotificationsModule,
+    WebSocketsModule,
   ],
   controllers: [],
   providers: [
