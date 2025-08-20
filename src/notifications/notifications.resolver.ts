@@ -16,20 +16,25 @@ export class NotificationsResolver {
 
   @Query(() => [Notification])
   @UseGuards(GraphQLJwtAuthGuard)
-  async myNotifications(@CurrentUser() user: User): Promise<Notification[]> {
-    return this.notificationsService.findUserNotifications(user.id);
+  async myNotifications(@CurrentUser() user: any): Promise<Notification[]> {
+    return this.notificationsService.findUserNotifications(user.userId);
   }
 
   @Query(() => Number)
   @UseGuards(GraphQLJwtAuthGuard)
-  async unreadCount(@CurrentUser() user: User): Promise<number> {
-    return this.notificationsService.getUnreadCount(user.id);
+  async unreadCount(@CurrentUser() user: any): Promise<number> {
+    return this.notificationsService.getUnreadCount(user.userId);
   }
 
   @Mutation(() => Notification)
   @UseGuards(GraphQLJwtAuthGuard)
-  async createNotification(@Args('createNotificationInput') createNotificationDto: CreateNotificationDto): Promise<Notification> {
-    const notification = await this.notificationsService.create(createNotificationDto);
+  async createNotification(
+    @Args('createNotificationInput')
+    createNotificationDto: CreateNotificationDto,
+  ): Promise<Notification> {
+    const notification = await this.notificationsService.create(
+      createNotificationDto,
+    );
     pubSub.publish('notificationAdded', { notificationAdded: notification });
     return notification;
   }

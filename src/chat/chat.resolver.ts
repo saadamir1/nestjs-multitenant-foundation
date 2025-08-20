@@ -18,8 +18,8 @@ export class ChatResolver {
 
   @Query(() => [ChatRoom])
   @UseGuards(GraphQLJwtAuthGuard)
-  async myRooms(@CurrentUser() user: User): Promise<ChatRoom[]> {
-    return this.chatService.findUserRooms(user.id);
+  async myRooms(@CurrentUser() user: any): Promise<ChatRoom[]> {
+    return this.chatService.findUserRooms(user.userId);
   }
 
   @Query(() => [ChatMessage])
@@ -40,9 +40,12 @@ export class ChatResolver {
   @UseGuards(GraphQLJwtAuthGuard)
   async sendMessage(
     @Args('sendMessageInput') sendMessageDto: SendMessageDto,
-    @CurrentUser() user: User,
+    @CurrentUser() user: any,
   ): Promise<ChatMessage> {
-    const message = await this.chatService.sendMessage(sendMessageDto, user.id);
+    const message = await this.chatService.sendMessage(
+      sendMessageDto,
+      user.userId,
+    );
     pubSub.publish('messageAdded', { messageAdded: message });
     return message;
   }
