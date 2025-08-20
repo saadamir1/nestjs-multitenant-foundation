@@ -3,7 +3,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
@@ -16,6 +16,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuditLog } from './common/entities/audit-log.entity';
 import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
+import { GraphQLValidationFilter } from './common/filters/graphql-exception.filter';
 import { WebSocketsModule } from './websockets/websockets.module';
 
 @Module({
@@ -113,6 +114,10 @@ import { WebSocketsModule } from './websockets/websockets.module';
     //   provide: APP_GUARD,
     //   useClass: GraphQLThrottlerGuard,
     // },
+    {
+      provide: APP_FILTER,
+      useClass: GraphQLValidationFilter,
+    },
   ],
 })
 export class AppModule implements NestModule {
