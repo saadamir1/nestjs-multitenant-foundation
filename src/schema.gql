@@ -26,6 +26,7 @@ type ChatRoom {
   messages: [ChatMessage!]!
   name: String!
   participantIds: [Float!]!
+  participants: [User!]!
 }
 
 input CitiesFilterInput {
