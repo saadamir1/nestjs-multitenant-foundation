@@ -1,5 +1,13 @@
-import { Resolver, Query, Mutation, Args, Subscription } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Subscription,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
+import { UseGuards, Inject, forwardRef } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
 import { ChatService } from './chat.service';
 import { ChatRoom } from './entities/chat-room.entity';
@@ -9,12 +17,29 @@ import { SendMessageDto } from './dto/send-message.dto';
 import { GraphQLJwtAuthGuard } from '../auth/graphql-jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 const pubSub = new PubSub();
 
 @Resolver(() => ChatRoom)
 export class ChatResolver {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+  ) {}
+
+  @ResolveField(() => [User])
+  async participants(@Parent() room: ChatRoom): Promise<User[]> {
+    // room.participantIds is an array of user IDs
+    if (!room.participantIds || !Array.isArray(room.participantIds)) return [];
+    // Fetch all users by their IDs
+    const users = await Promise.all(
+      room.participantIds.map((id) => this.usersService.findOne(id)),
+    );
+    // Filter out nulls (in case a user was deleted)
+    return users.filter(Boolean) as User[];
+  }
 
   @Query(() => [ChatRoom])
   @UseGuards(GraphQLJwtAuthGuard)
