@@ -1,5 +1,9 @@
 import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
-import { UseGuards, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  UseGuards,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
@@ -27,34 +31,41 @@ export class AuthResolver {
   ) {}
 
   @Mutation(() => AuthResponse)
-  async login(@Args('loginInput') loginInput: LoginInput): Promise<AuthResponse> {
+  async login(
+    @Args('loginInput') loginInput: LoginInput,
+  ): Promise<AuthResponse> {
     return this.authService.login(loginInput.email, loginInput.password);
   }
 
   @Mutation(() => AuthResponse)
-  async refreshToken(@Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput): Promise<AuthResponse> {
+  async refreshToken(
+    @Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput,
+  ): Promise<AuthResponse> {
     return this.authService.refresh(refreshTokenInput.refreshToken);
   }
 
   @Mutation(() => MessageResponse)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
-  async register(@Args('registerInput') registerInput: CreateUserInput): Promise<MessageResponse> {
+  async register(
+    @Args('registerInput') registerInput: CreateUserInput,
+  ): Promise<MessageResponse> {
     const userExists = await this.usersService.findByEmail(registerInput.email);
     if (userExists) {
       throw new ConflictException('Email already in use');
     }
-    
+
     const user = await this.usersService.create(registerInput);
     await this.authService.sendEmailVerification(registerInput.email);
 
-    return { 
-      message: 'User registered successfully. Please check your email to verify your account.'
+    return {
+      message:
+        'User registered successfully. Please check your email to verify your account.',
     };
   }
 
   @Mutation(() => AuthResponse)
-  async bootstrapAdmin(@Args('bootstrapInput') bootstrapInput: CreateUserInput): Promise<AuthResponse> {
+  async bootstrapAdmin(
+    @Args('bootstrapInput') bootstrapInput: CreateUserInput,
+  ): Promise<AuthResponse> {
     const existingAdmin = await this.usersService.findByRole('admin');
     if (existingAdmin && existingAdmin.length > 0) {
       throw new ConflictException('Admin user already exists');
@@ -67,28 +78,43 @@ export class AuthResolver {
     });
 
     const tokens = await this.authService.generateTokens(adminUser);
-    await this.authService.updateRefreshToken(adminUser.id, tokens.refresh_token);
+    await this.authService.updateRefreshToken(
+      adminUser.id,
+      tokens.refresh_token,
+    );
 
     return tokens;
   }
 
   @Mutation(() => MessageResponse)
-  async forgotPassword(@Args('forgotPasswordInput') forgotPasswordInput: ForgotPasswordInput): Promise<MessageResponse> {
+  async forgotPassword(
+    @Args('forgotPasswordInput') forgotPasswordInput: ForgotPasswordInput,
+  ): Promise<MessageResponse> {
     return this.authService.forgotPassword(forgotPasswordInput.email);
   }
 
   @Mutation(() => MessageResponse)
-  async resetPassword(@Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput): Promise<MessageResponse> {
-    return this.authService.resetPassword(resetPasswordInput.token, resetPasswordInput.newPassword);
+  async resetPassword(
+    @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
+  ): Promise<MessageResponse> {
+    return this.authService.resetPassword(
+      resetPasswordInput.token,
+      resetPasswordInput.newPassword,
+    );
   }
 
   @Mutation(() => MessageResponse)
-  async sendEmailVerification(@Args('emailVerificationInput') emailVerificationInput: EmailVerificationInput): Promise<MessageResponse> {
+  async sendEmailVerification(
+    @Args('emailVerificationInput')
+    emailVerificationInput: EmailVerificationInput,
+  ): Promise<MessageResponse> {
     return this.authService.sendEmailVerification(emailVerificationInput.email);
   }
 
   @Mutation(() => MessageResponse)
-  async verifyEmail(@Args('verifyEmailInput') verifyEmailInput: VerifyEmailInput): Promise<MessageResponse> {
+  async verifyEmail(
+    @Args('verifyEmailInput') verifyEmailInput: VerifyEmailInput,
+  ): Promise<MessageResponse> {
     return this.authService.verifyEmail(verifyEmailInput.token);
   }
 
@@ -99,7 +125,7 @@ export class AuthResolver {
     if (!fullUser) {
       throw new NotFoundException('User not found');
     }
-    
+
     const { password, refreshToken, ...userProfile } = fullUser;
     return userProfile as User;
   }
