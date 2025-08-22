@@ -35,7 +35,16 @@ export class ChatService {
       ...sendMessageDto,
       senderId,
     });
-    return this.messageRepository.save(message);
+    const saved = await this.messageRepository.save(message);
+    // Always return with sender relation populated
+    const found = await this.messageRepository.findOne({
+      where: { id: saved.id },
+      relations: ['sender'],
+    });
+    if (!found) {
+      throw new Error('Message not found after save');
+    }
+    return found;
   }
 
   async getRoomMessages(roomId: number): Promise<ChatMessage[]> {
