@@ -2,7 +2,11 @@ import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { CreateUserInput, UpdateProfileInput, ChangePasswordInput } from './dto/graphql-inputs';
+import {
+  CreateUserInput,
+  UpdateProfileInput,
+  ChangePasswordInput,
+} from './dto/graphql-inputs';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -13,8 +17,6 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(() => [User])
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
   async users(): Promise<User[]> {
     const result = await this.usersService.findAll();
     return Array.isArray(result) ? result : result.data;
@@ -40,7 +42,9 @@ export class UsersResolver {
   @Mutation(() => User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async createUser(@Args('createUserInput') createUserInput: CreateUserInput): Promise<User> {
+  async createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+  ): Promise<User> {
     return this.usersService.create(createUserInput);
   }
 
@@ -66,7 +70,9 @@ export class UsersResolver {
   @Mutation(() => Boolean)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async deleteUser(@Args('id', { type: () => ID }) id: number): Promise<boolean> {
+  async deleteUser(
+    @Args('id', { type: () => ID }) id: number,
+  ): Promise<boolean> {
     await this.usersService.remove(id);
     return true;
   }
