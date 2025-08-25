@@ -39,5 +39,6 @@ export class ChatMessage {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'senderId' })
+  @Field(() => User, { nullable: true })
   sender: User;
 }

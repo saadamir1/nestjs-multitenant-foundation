@@ -17,6 +17,7 @@ type ChatMessage {
   createdAt: DateTime!
   id: ID!
   roomId: Float!
+  sender: User
   senderId: Float!
 }
 
