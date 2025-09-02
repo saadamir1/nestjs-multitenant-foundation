@@ -1,8 +1,8 @@
-# NestJS GraphQL Realtime Foundation
+# NestJS GraphQL Multi-Tenant Foundation
 
-**This repository is an advanced version of the original NestJS GraphQL Foundation, extended with real-time WebSocket features (chat, notifications, subscriptions) on top of the core GraphQL foundation.**
+**This repository is a multi-tenant version of the NestJS GraphQL Realtime Foundation, designed for SaaS applications that serve multiple organizations/workspaces.**
 
-A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, **real-time chat**, **notifications**, **file uploads**, and **analytics** via WebSockets and GraphQL subscriptions.
+A comprehensive, production-ready NestJS GraphQL foundation with **multi-tenancy**, advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, **workspace isolation**, **real-time chat**, **notifications**, **file uploads**, and **analytics** via WebSockets and GraphQL subscriptions.
 
 ## 🛠️ Tech Stack
 
@@ -20,6 +20,7 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 
 ## ✨ Features
 
+- 🏢 **Multi-Tenancy** - Workspace isolation for SaaS applications
 - 🔐 **JWT Authentication** (Access + Refresh Tokens)
 - 🔄 **Token Refresh Mechanism**
 - 🛡️ **Role-Based Access Control** (Admin/User)

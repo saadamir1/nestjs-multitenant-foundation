@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import { Workspace } from '../../workspaces/entities/workspace.entity';
 
 enum UserRole {
   USER = 'user',
@@ -71,4 +72,12 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   emailVerificationTokenExpires: Date;
+
+  @Field(() => Workspace)
+  @ManyToOne(() => Workspace, workspace => workspace.users)
+  @JoinColumn({ name: 'workspaceId' })
+  workspace: Workspace;
+
+  @Column()
+  workspaceId: number;
 }

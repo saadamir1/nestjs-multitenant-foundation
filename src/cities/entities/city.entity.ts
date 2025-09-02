@@ -3,8 +3,11 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Workspace } from '../../workspaces/entities/workspace.entity';
 
 @ObjectType()
 @Entity({ name: 'cities' })
@@ -35,4 +38,12 @@ export class City {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
+
+  @Field(() => Workspace)
+  @ManyToOne(() => Workspace)
+  @JoinColumn({ name: 'workspaceId' })
+  workspace: Workspace;
+
+  @Column()
+  workspaceId: number;
 }
