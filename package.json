@@ -47,7 +47,9 @@
     "crypto": "^1.0.1",
     "graphql": "^16.11.0",
     "graphql-subscriptions": "^3.0.0",
+    "graphql-upload": "^16.0.2",
     "graphql-ws": "^6.0.6",
+
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
@@ -73,6 +75,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.6",
     "@types/nodemailer": "^6.4.17",
+    "@types/graphql-upload": "^16.0.7",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",

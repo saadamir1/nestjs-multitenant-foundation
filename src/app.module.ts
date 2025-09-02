@@ -12,6 +12,9 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ChatModule } from './chat/chat.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { UploadModule } from './upload/upload.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+
 
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuditLog } from './common/entities/audit-log.entity';
@@ -108,6 +111,9 @@ import { WebSocketsModule } from './websockets/websockets.module';
     ChatModule,
     NotificationsModule,
     WebSocketsModule,
+    UploadModule,
+    AnalyticsModule,
+
   ],
   controllers: [],
   providers: [
