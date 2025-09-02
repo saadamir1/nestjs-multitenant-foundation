@@ -112,6 +112,23 @@ export class AuthResolver {
   }
 
   @Mutation(() => MessageResponse)
+  async resendEmailVerification(
+    @Args('emailVerificationInput')
+    emailVerificationInput: EmailVerificationInput,
+  ): Promise<MessageResponse> {
+    const user = await this.usersService.findByEmail(emailVerificationInput.email);
+    if (!user) {
+      return { message: 'If email exists, verification link has been sent' };
+    }
+    
+    if (user.isEmailVerified) {
+      return { message: 'Email is already verified' };
+    }
+
+    return this.authService.sendEmailVerification(emailVerificationInput.email);
+  }
+
+  @Mutation(() => MessageResponse)
   async verifyEmail(
     @Args('verifyEmailInput') verifyEmailInput: VerifyEmailInput,
   ): Promise<MessageResponse> {

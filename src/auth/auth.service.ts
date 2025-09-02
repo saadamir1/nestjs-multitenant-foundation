@@ -56,7 +56,7 @@ export class AuthService {
     // Check if email is verified
     if (!user.isEmailVerified) {
       throw new UnauthorizedException(
-        'Please verify your email before logging in',
+        'Please verify your email before logging in. Use resendEmailVerification mutation if verification link expired.',
       );
     }
 
