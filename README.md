@@ -2,7 +2,7 @@
 
 **This repository is an advanced version of the original NestJS GraphQL Foundation, extended with real-time WebSocket features (chat, notifications, subscriptions) on top of the core GraphQL foundation.**
 
-A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, **real-time chat**, and **notifications** via WebSockets and GraphQL subscriptions.
+A comprehensive, production-ready NestJS GraphQL foundation with advanced authentication, security, and enterprise-grade features. Built with PostgreSQL, TypeORM, GraphQL, JWT authentication, refresh tokens, role-based access control, audit logging, **real-time chat**, **notifications**, **file uploads**, and **analytics** via WebSockets and GraphQL subscriptions.
 
 ## 🛠️ Tech Stack
 
@@ -15,6 +15,7 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - **Winston** - Logging library
 - **Nodemailer** - Email service for password reset and verification
 - **Socket.IO** - Real-time chat and notifications
+- **Cloudinary** - Cloud-based image storage and optimization
 - **TypeScript** - Type safety
 
 ## ✨ Features
@@ -34,134 +35,50 @@ A comprehensive, production-ready NestJS GraphQL foundation with advanced authen
 - 🔄 **Database Migrations** - Version control for database schema
 - 🎯 **Type Safety** - Full TypeScript support
 - 🧪 **Comprehensive Testing** - Unit tests, E2E tests, and test coverage
-- � **Real-Time Chat** - Chat rooms, messaging, and subscriptions
+- 💬 **Real-Time Chat** - Chat rooms, messaging, and subscriptions
 - 🔔 **Notifications** - User notifications, unread count, mark as read, and real-time updates
-- �📚 **GraphQL Playground** - Interactive GraphQL query interface
+- 📁 **File Upload** - Cloudinary integration with image optimization
+- 📈 **Analytics Dashboard** - User growth, activity stats, and insights
+- 💳 **Payments** - Stripe integration (optional branch)
+- 📚 **GraphQL Playground** - Interactive GraphQL query interface
 - ⚡ **Production Ready** - Error handling, validation, and security best practices
+
+## 🌟 Branch Structure
+
+### **Main Branch** (`master`)
+Core foundation with essential features:
+- Authentication & Security
+- Real-time Chat & Notifications  
+- File Uploads (Cloudinary)
+- Analytics Dashboard
+- Production-ready setup
+
+### **Payments Branch** (`feature/payments`)
+Complete foundation + Stripe payments integration:
+```bash
+# To use payments version
+git checkout feature/payments
+# or merge into your project
+git merge feature/payments
+```
 
 ## 🚀 Quick Start
 
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/saadamir1/nestjs-graphql-foundation.git
-cd nestjs-graphql-foundation
+git clone https://github.com/saadamir1/nestjs-graphql-realtime-foundation.git
+cd nestjs-graphql-realtime-foundation
 npm install
 ```
 
 ### 2. Database Setup
 
-## 🧪 GraphQL API
-
-### Sample GraphQL Queries
-
-#### Chat (Real-Time Messaging)
-
-```graphql
-# Create a chat room
-mutation {
-  createRoom(createRoomInput: { name: "General", participantIds: [1, 2] }) {
-    id
-    name
-    participantIds
-    createdAt
-  }
-}
-
-# Send a message
-mutation {
-  sendMessage(sendMessageInput: { content: "Hello, world!", roomId: 1 }) {
-    id
-    content
-    senderId
-    roomId
-    createdAt
-  }
-}
-
-# Get my chat rooms
-query {
-  myRooms {
-    id
-    name
-    participantIds
-    createdAt
-  }
-}
-
-# Get messages in a room
-query {
-  roomMessages(roomId: 1) {
-    id
-    content
-    senderId
-    createdAt
-  }
-}
-
-# Subscribe to new messages (GraphQL subscription)
-subscription {
-  messageAdded {
-    id
-    content
-    senderId
-    roomId
-    createdAt
-  }
-}
-```
-
-#### Notifications
-
-```graphql
-# Get my notifications
-query {
-  myNotifications {
-    id
-    type
-    title
-    message
-    read
-    createdAt
-  }
-}
-
-# Get unread notification count
-query {
-  unreadCount
-}
-
-# Mark notification as read
-mutation {
-  markNotificationRead(id: 1) {
-    id
-    read
-  }
-}
-
-# Subscribe to new notifications (GraphQL subscription)
-subscription {
-  notificationAdded {
-    id
-    type
-    title
-    message
-    read
-    createdAt
-  }
-}
-```
-
----
-
-## 🗂️ Project Structure
-
-````
 ```sql
 CREATE USER dev WITH PASSWORD 'secret';
 CREATE DATABASE demo OWNER dev;
 GRANT ALL PRIVILEGES ON DATABASE demo TO dev;
-````
+```
 
 ### 3. Environment Variables
 
@@ -172,49 +89,42 @@ cp .env.example .env
 # Edit .env with your actual values
 ```
 
-Or create `.env` manually:
+Required environment variables:
 
 ```env
+# Database
 DB_HOST=127.0.0.1
 DB_PORT=5432
-```
-
----
-
-## 🧑‍💻 Frontend Integration
-
-## This backend is designed to be used with a separate React frontend (see the `nestjs-graphql-realtime-frontend` repo or your own custom frontend). The previous `frontend-test.html` file has been removed in favor of a dedicated frontend application.
-
 DB_USERNAME=dev
 DB_PASSWORD=secret
 DB_NAME=demo
+
+# JWT
 JWT_SECRET=jwt-secret-key
 JWT_EXPIRES_IN=900s
 JWT_REFRESH_SECRET=jwt-refresh-secret
 JWT_REFRESH_EXPIRES_IN=7d
-NODE_ENV=development
 
-# Email Configuration (for password reset)
-
+# Email Configuration (for password reset and email verification)
 EMAIL_USER=your-gmail@gmail.com
 EMAIL_PASS=your-gmail-app-password
 FRONTEND_URL=http://localhost:3001
 
-# Production Database URL (optional)
+# Cloudinary (for file uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-DATABASE_URL=postgresql://username:password@host:port/database
-
-````
+# Stripe (only in payments branch)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+```
 
 ### 4. Run Database Migrations
 
 ```bash
-# Run existing migrations
 npm run migration:run
-
-# Check migration status
-npm run migration:show
-````
+```
 
 ### 5. Run Application
 
@@ -223,14 +133,33 @@ npm run start:dev
 ```
 
 **Local Development:**
-
 - GraphQL Playground: `http://localhost:3000/graphql`
 - GraphQL API: `http://localhost:3000/graphql`
 
-**🚀 Live Production:**
+## 📱 Frontend Integration
 
-- GraphQL API: `https://nestjs-graphql-foundation.onrender.com/graphql`
-- GraphQL Playground: `https://nestjs-graphql-foundation.onrender.com/graphql`
+This backend is designed to be used with a separate React frontend. You can:
+
+- Use the companion React frontend: `nestjs-graphql-realtime-frontend`
+- Build your own custom frontend
+- Connect any GraphQL-compatible frontend framework
+
+**WebSocket Connection:**
+```javascript
+// Frontend WebSocket connection example
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000', {
+  auth: {
+    token: 'your-jwt-token'
+  }
+});
+
+// Listen for real-time messages
+socket.on('messageAdded', (message) => {
+  console.log('New message:', message);
+});
+```
 
 ## 🧪 GraphQL API
 
@@ -332,17 +261,6 @@ query {
   }
 }
 
-# Get single city
-query {
-  city(id: 1) {
-    id
-    name
-    description
-    country
-    active
-  }
-}
-
 # Create a city
 mutation {
   createCity(
@@ -356,60 +274,6 @@ mutation {
     name
     description
     country
-  }
-}
-
-# Update city
-mutation {
-  updateCity(id: 1, updateCityInput: { description: "Updated description" }) {
-    id
-    name
-    description
-    country
-  }
-}
-
-# Delete city
-mutation {
-  deleteCity(id: 1)
-}
-```
-
-#### User Management
-
-```graphql
-# Update user profile
-mutation {
-  updateProfile(
-    updateProfileInput: { firstName: "Updated", lastName: "Name" }
-  ) {
-    id
-    firstName
-    lastName
-  }
-}
-
-# Change password
-mutation {
-  changePassword(
-    changePasswordInput: {
-      currentPassword: "oldPassword"
-      newPassword: "newPassword123"
-    }
-  )
-}
-
-# Register new user (Admin only)
-mutation {
-  register(
-    registerInput: {
-      email: "user@example.com"
-      password: "securePassword123"
-      firstName: "John"
-      lastName: "Doe"
-    }
-  ) {
-    message
   }
 }
 ```
@@ -443,6 +307,13 @@ mutation {
   }
 }
 
+# Resend email verification (for expired tokens)
+mutation {
+  resendEmailVerification(emailVerificationInput: { email: "user@example.com" }) {
+    message
+  }
+}
+
 # Verify email with token
 mutation {
   verifyEmail(verifyEmailInput: { token: "verification-token-from-email" }) {
@@ -451,303 +322,173 @@ mutation {
 }
 ```
 
-## 🔁 Token Flow
+## 🧪 GraphQL API Examples
 
-- **Access Token** expires in 15 mins
-- **Refresh Token** stored securely in DB (7 days)
-- Use `refreshToken` mutation to get new tokens without re-login
+### File Upload
 
-## 🗃️ Database Migrations
+```graphql
+# Upload profile picture
+mutation {
+  uploadProfilePicture(file: $file)
+}
 
-### Migration Commands
-
-```bash
-# Generate migration from entity changes
-npm run migration:generate src/migrations/YourMigrationName
-
-# Create empty migration
-npm run migration:create src/migrations/YourMigrationName
-
-# Run pending migrations
-npm run migration:run
-
-# Revert last migration
-npm run migration:revert
-
-# Show migration status
-npm run migration:show
-```
-
-### Migration Workflow
-
-1. **Modify entities** → Update your TypeORM entities
-2. **Generate migration** → `npm run migration:generate src/migrations/FeatureName`
-3. **Review migration** → Check generated SQL in migration file
-4. **Run migration** → `npm run migration:run`
-5. **Deploy** → Migrations run automatically in production
-
-### Production Deployment
-
-```bash
-# Build application
-npm run build
-
-# Run migrations
-npm run migration:run
-
-# Start production server
-npm run start:prod
-```
-
-## 📄 Database Schema
-
-### User
-
-```json
-{
-  "id": "number",
-  "email": "string (unique)",
-  "password": "string (hashed)",
-  "firstName": "string",
-  "lastName": "string",
-  "role": "admin | user",
-  "refreshToken": "string (hashed)",
-  "isEmailVerified": "boolean",
-  "profilePicture": "string (optional)"
+# Upload general image
+mutation {
+  uploadImage(file: $file)
 }
 ```
 
-### City (Pagination Response)
+### Analytics (Admin Only)
 
-```json
-{
-  "data": [
-    {
-      "id": "number",
-      "name": "string (unique)",
-      "description": "string",
-      "country": "string",
-      "active": "boolean",
-      "imageUrl": "string (optional)",
-      "deletedAt": "Date | null"
+```graphql
+# Dashboard stats
+query {
+  dashboardStats {
+    totalUsers
+    totalMessages
+    totalNotifications
+    recentUsers {
+      email
+      firstName
     }
-  ],
-  "total": "number",
-  "page": "number",
-  "lastPage": "number"
+  }
+}
+
+# User growth data
+query {
+  userGrowth(days: 30) {
+    date
+    count
+  }
 }
 ```
 
-## 🔐 Authentication & Authorization
+### Chat & Notifications
 
-- JWT tokens for authentication (access + refresh)
-- Role-based access control with custom guards
-- Passwords hashed with bcrypt
-- Refresh tokens securely stored in database
-- Email verification system
-- Password reset via email
+```graphql
+# Create chat room
+mutation {
+  createRoom(createRoomInput: { name: "General", participantIds: [1, 2] }) {
+    id
+    name
+    participantIds
+  }
+}
+
+# Get notifications
+query {
+  myNotifications {
+    id
+    type
+    title
+    message
+    read
+  }
+}
+
+# Subscribe to new messages
+subscription {
+  messageAdded {
+    id
+    content
+    senderId
+    roomId
+  }
+}
+```
+
+### Payments (feature/payments branch only)
+
+```graphql
+# Create payment intent
+mutation {
+  createPaymentIntent(createPaymentInput: { 
+    amount: 29.99 
+    description: "Premium subscription" 
+  }) {
+    clientSecret
+    paymentIntentId
+  }
+}
+
+# Get user payments
+query {
+  myPayments {
+    id
+    amount
+    status
+    description
+    createdAt
+  }
+}
+```
 
 ## 🗂️ Project Structure
 
 ```
 src/
-├── auth/              # Authentication logic (GraphQL resolvers)
+├── auth/              # Authentication (GraphQL resolvers)
 ├── users/             # User management (GraphQL resolvers)
-├── cities/            # Cities CRUD (GraphQL resolvers)
+├── cities/            # Cities CRUD example (GraphQL resolvers)
+├── chat/              # Real-time chat functionality
+├── notifications/     # User notifications system
+├── upload/            # File upload with Cloudinary
+├── analytics/         # Dashboard and user insights
+├── payments/          # Stripe integration (payments branch only)
+├── websockets/        # WebSocket gateway
 ├── common/            # Guards, decorators, middleware, services
-│   ├── services/      # Email, Audit services
+│   ├── services/      # Email, Audit, Cloudinary services
 │   ├── entities/      # Audit log entity
 │   ├── guards/        # JWT, Roles, GraphQL guards
 │   └── middleware/    # Logger middleware
 ├── migrations/        # Database migrations
 ├── data-source.ts     # TypeORM CLI configuration
-├── migration.config.ts # Migration configuration
 ├── schema.gql         # Auto-generated GraphQL schema
-├── app.module.ts
 └── main.ts
-logs/                  # Application logs
 ```
 
-## 🧪 Testing
-
-This project includes comprehensive testing with **60 unit tests** and **6 E2E tests** covering critical functionality.
-
-### Unit Tests
+## 🏷️ Version Tags
 
 ```bash
-# Run all unit tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:cov
+# Create version tags
+git tag -a v1.0.0 -m "Core foundation release"
+git tag -a v1.1.0 -m "Added file uploads and analytics"
+git push origin --tags
 ```
 
-**Test Coverage:**
+## 📈 Commercial Value
 
-- ✅ **Services**: All CRUD operations, authentication, email verification, profile management
-- ✅ **Resolvers**: GraphQL endpoints, request/response handling
-- ✅ **Auth**: Login, refresh tokens, JWT validation, email verification
-- ✅ **Users**: Profile updates, password changes, user management
-- ✅ **Audit**: Activity logging and tracking
-- ✅ **Error Handling**: 404s, validation errors, unauthorized access
+This foundation is production-ready and can be used for:
 
-### E2E Tests
-
-```bash
-# Run end-to-end tests
-npm run test:e2e
-```
-
-**E2E Test Coverage:**
-
-- ✅ **Health Check**: API status endpoint
-- ✅ **Email Verification**: Send verification, verify email, login blocking
-- ✅ **Authentication Flow**: Complete email verification workflow
-- ✅ **Database**: Proper cleanup and isolation
-
-## 📜 Available Scripts
-
-```bash
-# Development
-npm run start:dev              # Development server
-npm run start:prod             # Production server
-npm run build                  # Build application
-
-# Testing
-npm run test                   # Run unit tests
-npm run test:watch             # Watch mode tests
-npm run test:cov               # Test coverage report
-npm run test:e2e               # End-to-end tests
-npm run test:debug             # Debug tests
-
-# Database Migrations
-npm run migration:generate     # Generate migration from entities
-npm run migration:create       # Create empty migration
-npm run migration:run          # Run pending migrations
-npm run migration:revert       # Revert last migration
-npm run migration:show         # Show migration status
-```
-
-## 🔧 Troubleshooting
-
-**Database Issues:**
-
-- Ensure PostgreSQL is running
-- Check user permissions
-- Run `npm run migration:show` to check migration status
-
-**Migration Issues:**
-
-- Ensure `NODE_ENV` is set in `.env`
-- Check `src/data-source.ts` configuration
-- Verify migration files are in `src/migrations/`
-
-**Token Issues:**
-
-- Verify JWT secrets in `.env`
-- Use refresh mutation when access token expires
-- Check `Authorization: Bearer <token>` format in GraphQL headers
-
-**Email Issues:**
-
-- Check Gmail app password is correct (16 characters)
-- Verify 2-Factor Authentication is enabled on Gmail
-- Check spam folder for reset emails
-- Ensure `EMAIL_USER` and `EMAIL_PASS` are set in `.env`
-- Verify `FRONTEND_URL` matches your frontend domain
-
-**Permission Denied:**
-
-- Verify user role in database
-- Check endpoint permissions (admin vs user)
-- Ensure proper Authorization header in GraphQL requests
-
-**GraphQL Issues:**
-
-- Use GraphQL Playground for testing queries
-- Check schema documentation in playground
-- Verify query syntax and field names
-- Ensure proper authentication headers for protected queries
-
-## 🐳 Docker Support
-
-### Quick Start with Docker
-
-```bash
-# Start entire stack (app + database)
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop everything
-docker-compose down
-```
-
-### Production Docker Build
-
-```bash
-# Build image
-docker build -t nestjs-graphql-foundation .
-
-# Run container
-docker run -p 3000:3000 --env-file .env nestjs-graphql-foundation
-```
+- **SaaS Applications** - Complete user management and real-time features
+- **E-commerce Platforms** - With payments branch for transactions
+- **Social Platforms** - Chat, notifications, file uploads
+- **Analytics Dashboards** - Built-in user insights and growth tracking
+- **Starter Kit Sales** - Commercial foundation ($200-500+ value)
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch
-3. Make changes and add migrations if needed
-4. **Write tests** for new features
-5. Run `npm run test` and `npm run test:e2e` to ensure all tests pass
-6. Run `npm run migration:generate` for schema changes
-7. Commit changes with descriptive messages
-8. Push and create Pull Request
-
-### Development Workflow
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Set up database and run migrations
-npm run migration:run
-
-# 3. Start development server
-npm run start:dev
-
-# 4. Run tests during development
-npm run test:watch
-
-# 5. Run E2E tests before committing
-npm run test:e2e
-```
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
 ---
 
 **Happy Coding! 🚀**
 
-## 📈 Project Stats
+## 📊 Project Stats
 
-- **60 Unit Tests** - Comprehensive service and resolver testing
-- **6 E2E Tests** - Health check and email verification workflows
+- **Enterprise-Grade Foundation** - Production-ready architecture
+- **Modular Design** - Optional payments branch for flexibility
+- **Real-time Features** - WebSockets, chat, notifications
+- **File Management** - Cloudinary integration with optimization
+- **Analytics Built-in** - Dashboard stats and user insights
 - **100% TypeScript** - Full type safety
-- **JWT Security** - Access + refresh token implementation
-- **Email Verification** - Token-based email verification system
-- **Audit Logging** - User activity tracking for security
-- **Profile Management** - User profile updates and password changes
+- **Comprehensive Testing** - Unit tests and E2E coverage
 - **Database Migrations** - Version-controlled schema changes
-- **GraphQL Schema** - Auto-generated, type-safe API schema
-- **Production Ready** - Error handling, validation, logging, comprehensive testing
 
 ### Tags
 
-`nestjs` `graphql` `apollo-server` `typeorm` `postgresql` `jwt-auth` `refresh-tokens` `rbac` `typescript` `migrations` `database-versioning` `jest-testing` `e2e-testing` `winston-logging` `production-ready`
-
-## 🔗 Related Projects
-
-- **REST Version**: [nestjs-pg-crud](https://github.com/saadamir1/nestjs-pg-crud) - The original REST API foundation this project was transformed from
+`nestjs` `graphql` `realtime` `websockets` `chat` `notifications` `file-upload` `analytics` `payments` `stripe` `cloudinary` `jwt-auth` `typescript` `production-ready`
