@@ -5,7 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { City } from '../cities/entities/city.entity';
 import { AuditLog } from '../common/entities/audit-log.entity';
 import { ChatRoom } from '../chat/entities/chat-room.entity';
-import { Message } from '../chat/entities/message.entity';
+import { ChatMessage } from '../chat/entities/chat-message.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 
 @Injectable()
@@ -19,8 +19,8 @@ export class AnalyticsService {
     private auditRepository: Repository<AuditLog>,
     @InjectRepository(ChatRoom)
     private roomRepository: Repository<ChatRoom>,
-    @InjectRepository(Message)
-    private messageRepository: Repository<Message>,
+    @InjectRepository(ChatMessage)
+    private messageRepository: Repository<ChatMessage>,
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
   ) {}
@@ -81,7 +81,7 @@ export class AnalyticsService {
 
   async getActivityStats(userId?: number) {
     const query = this.auditRepository.createQueryBuilder('audit');
-    
+
     if (userId) {
       query.where('audit.userId = :userId', { userId });
     }
