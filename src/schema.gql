@@ -2,6 +2,23 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ActivityData {
+  action: String!
+  count: Int!
+}
+
+type AuditLog {
+  action: String!
+  createdAt: DateTime!
+  details: String
+  entity: String!
+  entityId: Int
+  id: ID!
+  ipAddress: String
+  userAgent: String
+  userId: Int
+}
+
 type AuthResponse {
   access_token: String!
   refresh_token: String!
@@ -28,6 +45,7 @@ type ChatRoom {
   name: String!
   participantIds: [Float!]!
   participants: [User!]!
+  workspace: Workspace!
 }
 
 input CitiesFilterInput {
@@ -43,6 +61,7 @@ type City {
   id: ID!
   imageUrl: String
   name: String!
+  workspace: Workspace!
 }
 
 input CreateCityInput {
@@ -74,6 +93,21 @@ input CreateUserInput {
   role: String
 }
 
+input CreateWorkspaceInput {
+  description: String
+  name: String!
+}
+
+type DashboardStats {
+  recentActivity: [AuditLog!]!
+  recentUsers: [User!]!
+  totalCities: Int!
+  totalMessages: Int!
+  totalNotifications: Int!
+  totalRooms: Int!
+  totalUsers: Int!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -103,6 +137,7 @@ type Mutation {
   createNotification(createNotificationInput: CreateNotificationDto!): Notification!
   createRoom(createRoomInput: CreateRoomDto!): ChatRoom!
   createUser(createUserInput: CreateUserInput!): User!
+  createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
   deleteCity(id: ID!): Boolean!
   deleteUser(id: ID!): Boolean!
   forgotPassword(forgotPasswordInput: ForgotPasswordInput!): MessageResponse!
@@ -110,11 +145,14 @@ type Mutation {
   markNotificationRead(id: Float!): Notification!
   refreshToken(refreshTokenInput: RefreshTokenInput!): AuthResponse!
   register(registerInput: CreateUserInput!): MessageResponse!
+  removeWorkspace(id: Int!): Boolean!
+  resendEmailVerification(emailVerificationInput: EmailVerificationInput!): MessageResponse!
   resetPassword(resetPasswordInput: ResetPasswordInput!): MessageResponse!
   sendEmailVerification(emailVerificationInput: EmailVerificationInput!): MessageResponse!
   sendMessage(sendMessageInput: SendMessageDto!): ChatMessage!
   updateCity(id: ID!, updateCityInput: UpdateCityInput!): City!
   updateProfile(updateProfileInput: UpdateProfileInput!): User!
+  updateWorkspace(id: Int!, updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!
   verifyEmail(verifyEmailInput: VerifyEmailInput!): MessageResponse!
 }
 
@@ -136,15 +174,23 @@ type PaginatedCities {
 }
 
 type Query {
+  allActivity: [ActivityData!]!
   cities(filter: CitiesFilterInput): PaginatedCities!
   city(id: ID!): City
+  dashboardStats: DashboardStats!
   me: User!
+  myActivity: [ActivityData!]!
   myNotifications: [Notification!]!
   myRooms: [ChatRoom!]!
+  myWorkspace: Workspace!
   roomMessages(roomId: Float!): [ChatMessage!]!
   unreadCount: Float!
   user(id: ID!): User
+  userGrowth(days: Int! = 30): [UserGrowthData!]!
   users: [User!]!
+  workspace(id: Int!): Workspace!
+  workspaceBySlug(slug: String!): Workspace!
+  workspaces: [Workspace!]!
 }
 
 input RefreshTokenInput {
@@ -180,6 +226,12 @@ input UpdateProfileInput {
   profilePicture: String
 }
 
+input UpdateWorkspaceInput {
+  description: String
+  logo: String
+  name: String
+}
+
 type User {
   email: String!
   firstName: String!
@@ -188,6 +240,12 @@ type User {
   lastName: String!
   profilePicture: String
   role: UserRole!
+  workspace: Workspace!
+}
+
+type UserGrowthData {
+  count: Int!
+  date: String!
 }
 
 enum UserRole {
@@ -197,4 +255,16 @@ enum UserRole {
 
 input VerifyEmailInput {
   token: String!
+}
+
+type Workspace {
+  active: Boolean!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  logo: String
+  name: String!
+  slug: String!
+  updatedAt: DateTime!
+  users: [User!]!
 }
